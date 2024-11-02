@@ -1,0 +1,81 @@
+Ciudad struct < 
+ganancia : N,
+pérdida : N,
+balance: Z //puede tener deficit
+>
+
+InfoTraslado struct <
+id: N, 
+origen: N, 
+destino: N, 
+gananciaNeta: N, 
+timestamp: N
+>
+
+Módulo BestEffort 
+implementa … {
+var mayorSuperavit : Heap <Arr<Ciudad>, Balance>, // params = arr, comparable
+var mayorGanancia : <Array<N>> ,  
+var mayorPerdida  : <Array<N>>, 
+var gananciaPromedio : Z,
+var ciudades : <Secuencia<Ciudad>>,
+var trasladosMasAntiguos : Heap <Arr<Traslado>, Antiguedad>,
+var trasladosMasRedituables : Heap <Arr<Traslado>, gananciaNeta>,
+var gananciaPromedio : dict(id traslado,(N,N)) //clave el id del traslado, tupla :cantidad de sumas actual, promedio actual. Ej 9+8+3 son 3 sumas. promedio actual = 20/3
+
+
+proc nuevoSistema (in cantCiudades: N, in traslados: seq<InfoTraslado>): BestEffort //O(|cantCiudades| + |traslados|)
+	res := new BestEffort;
+	i := 0;
+    while (i < cantCiudades ) { //O(|cantCiudades|)
+        nuevaCiudad = new Ciudad;
+        nuevaCiudad.ganancia = 0;
+        nuevaCiudad.perdida = 0;
+        res.ciudades[i] = nuevaCiudad;
+        i ++ ;
+    }
+
+    res.mayorGanancia = new Array[1]; // nuevo arr tamaño 1
+    res.mayorGanancia[0] = res.ciudades[0];
+    res.mayorPerdida = new Array[1];
+    res.mayorPerdida[0] = res.ciudades[0];
+
+    //creo un arreglo de traslados que voy a usar de parametro para crear los heaps. Si yo fuese reordenando un heap dentro del while tendria O(n log n)
+    //hay que revisar si esto es realmente lo mejor
+    arrTraslados = new Array[traslados.length] <Traslado>
+
+    j := 0;
+    while (j < traslados.size()) { //O(|traslados|)
+        res.ciudades[traslados[j].origen].ganancia += traslados[j].gananciaNeta ;
+        res.ciudades[traslados[j].destino].perdida += traslados[j].gananciaNeta ;
+        
+        res.ciudades[traslados[j].origen].balance += traslados[j].gananciaNeta;
+        res.ciudades[traslados[j].destino].balance -= traslados[j].gananciaNeta ;
+    
+        if (res.mayorGanancia[0] < res.ciudades[traslados[j].origen].ganancia) {
+            res.mayorGanancia = res.ciudades[traslados[j].origen].ganancia 
+        }
+        else if (res.mayorGanancia[0] == res.ciudades[traslados[j].origen].ganancia) {
+            res.mayorGanancia ++ [res.ciudades[traslados[j].origen].ganancia]
+        }
+
+        if (res.mayorPerdida[0] < res.ciudades[traslados[j].origen].perdida) {
+            res.mayorPerdida = res.ciudades[traslados[j].origen].perdida 
+        }
+        else if (res.mayorPerdida[0] == res.ciudades[traslados[j].origen].perdida) {
+            res.mayorPerdida ++ [res.ciudades[traslados[j].origen].perdida]
+        }
+
+        arr.Traslados[j] = traslados[j]
+        //setKey?
+        //(promedio actual * cantidad de sumas + gananciaNeta) / (cantidadSumas + 1) a ver si te sale mas facil, salu2
+        res.gananciaPromedio(traslados[j].id[1]) = (res.gananciaPromedio(traslados[j].id[1]) * res.gananciaPromedio(traslados[j].id[0]) + traslados[j].gananciaNeta) / (traslados[j].id[0] + 1)
+        res.gananciaPromedio(traslados[j].id[0]) = res.gananciaPromedio(traslados[j].id[0]) + 1
+    }
+    
+    // creo heaps. primer param el arreglo que recibe y el segundo el comparable
+    res.mayorSuperavit = new Heap(res.ciudades, balance); //O(|ciudades|)
+    res.trasladosMasAntiguos : new Heap(arrTraslados, timestamp); //O(|traslados|)
+    res.trasladosMasRedituables : new Heap(arrTraslados, gananciaNeta); //O(|traslados|)
+
+    end
