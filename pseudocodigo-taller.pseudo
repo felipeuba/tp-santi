@@ -15,8 +15,8 @@ timestamp: N
 Módulo BestEffort 
 implementa … {
 var mayorSuperavit : Heap <Arr<Ciudad>, Balance>, // params = arr, comparable
-var mayorGanancia : <Array<N>> ,  
-var mayorPerdida  : <Array<N>>, 
+var mayorGanancia : <ArrayList<N>> ,  
+var mayorPerdida  : <ArrayList<N>>, 
 var gananciaPromedio : Z,
 var ciudades : <Secuencia<Ciudad>>,
 var trasladosMasAntiguos : Heap <Arr<Traslado>, Antiguedad>,
@@ -35,17 +35,17 @@ proc nuevoSistema (in cantCiudades: N, in traslados: seq<InfoTraslado>): BestEff
         i ++ ;
     }
 
-    res.mayorGanancia = new Array[1]; // nuevo arr tamaño 1
+    res.mayorGanancia = new ArrayList[1]; // nuevo arr tamaño 1
     res.mayorGanancia[0] = res.ciudades[0];
-    res.mayorPerdida = new Array[1];
+    res.mayorPerdida = new ArrayList[1];
     res.mayorPerdida[0] = res.ciudades[0];
 
     //creo un arreglo de traslados que voy a usar de parametro para crear los heaps. Si yo fuese reordenando un heap dentro del while tendria O(n log n)
     //hay que revisar si esto es realmente lo mejor
-    arrTraslados = new Array[traslados.length] <Traslado>
+    arrTraslados = new ArrayList[traslados.length] <Traslado>
 
     j := 0;
-    while (j < traslados.size()) { //O(|traslados|)
+    while (j < traslados.length()) { //O(|traslados|)
         res.ciudades[traslados[j].origen].ganancia += traslados[j].gananciaNeta ;
         res.ciudades[traslados[j].destino].perdida += traslados[j].gananciaNeta ;
         
@@ -75,7 +75,45 @@ proc nuevoSistema (in cantCiudades: N, in traslados: seq<InfoTraslado>): BestEff
     
     // creo heaps. primer param el arreglo que recibe y el segundo el comparable
     res.mayorSuperavit = new Heap(res.ciudades, balance); //O(|ciudades|)
-    res.trasladosMasAntiguos : new Heap(arrTraslados, timestamp); //O(|traslados|)
-    res.trasladosMasRedituables : new Heap(arrTraslados, gananciaNeta); //O(|traslados|)
+    res.trasladosMasAntiguos = new Heap(arrTraslados, timestamp); //O(|traslados|)
 
     end
+    //creo que no usaremos Comparable, porque siempre tratamos con int (?)
+    class Heap<T extends Comparable<T>> {
+        private ArrayList<T> maxHeap;
+        //clave:id, valor:posicion. No implementado, hasta aca llego por ahora
+        private dict<Integer, Integer> positionMap;
+
+        public Heap(ArrayList arr, Comparable comparable){
+            this.maxHeap = floydInsert(arr, comparable);
+        }
+
+        private void floydInsert(ArrayList arr, Comparable comparable){
+            for(int i = arr.length/2 -1; i >= 0; i--){
+                heapify(i, arr, comparable);
+            }
+            this.maxHeap = arr;
+        }
+
+        private void heapify(int i, ArrayList arr){
+            int largest = i;
+            int left = 2i + 1;
+            int right = 2i + 2;
+
+            if (left < arr.length && arr[left].comparable > arr[largest].comparable){
+                largest = left
+            }
+            if (right < arr.length && arr[right].comparable > arr[largest].comparable){
+                largest = right
+            }
+            if (largest != i){
+                swap(i, largest)
+                heapify(largest)
+            }
+        }
+        private void swap(int i, int j, arr) {
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
