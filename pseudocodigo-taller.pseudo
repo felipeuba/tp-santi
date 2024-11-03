@@ -76,6 +76,7 @@ proc nuevoSistema (in cantCiudades: N, in traslados: seq<InfoTraslado>): BestEff
     // creo heaps. primer param el arreglo que recibe y el segundo el comparable
     res.mayorSuperavit = new Heap(res.ciudades, balance); //O(|ciudades|)
     res.trasladosMasAntiguos = new Heap(arrTraslados, timestamp); //O(|traslados|)
+    res.trasladosMasRedituables = new Heap(arrTraslados, ganancia); //O(|traslados|)
 
     end
     //creo que no usaremos Comparable, porque siempre tratamos con int (?)
@@ -112,8 +113,11 @@ proc nuevoSistema (in cantCiudades: N, in traslados: seq<InfoTraslado>): BestEff
             }
         }
         private void swap(int i, int j, arr) {
+            //revisar para no hacer aliasing
             int temp = arr[i];
             arr[i] = arr[j];
             arr[j] = temp;
+            positionMap.add(arr[i].id, arr[i]);
+            positionMap.add(arr[j].id, arr[j]);
         }
     }
