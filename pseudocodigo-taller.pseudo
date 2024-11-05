@@ -82,7 +82,7 @@ proc nuevoSistema (in cantCiudades: N, in traslados: seq<InfoTraslado>): BestEff
     //creo que no usaremos Comparable, porque siempre tratamos con int (?)
     class Heap<T extends Comparable<T>> {
         private ArrayList<T> maxHeap;
-        //clave:id, valor:posicion. No implementado, hasta aca llego por ahora
+        //clave:id, valor:posicion
         private dict<Integer, Integer> positionMap;
 
         public Heap(ArrayList arr, Comparable comparable){
