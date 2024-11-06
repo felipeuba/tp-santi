@@ -23,101 +23,155 @@ var trasladosMasRedituables : Heap <ArrayList<Traslado>, gananciaNeta>,
 var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
 
 
-proc nuevoSistema (in cantCiudades: N, in traslados: seq<InfoTraslado>): BestEffort //O(|cantCiudades| + |traslados|)
-	res := new BestEffort;
-    res.ciudades = newArray<Ciudad>[cantCiudades];
-	i := 0;
-    while (i < cantCiudades ) { //O(|cantCiudades|)
-        nuevaCiudad = new Ciudad;
-        nuevaCiudad.ganancia = 0;
-        nuevaCiudad.perdida = 0;
-        res.ciudades[i] = nuevaCiudad;
-        i ++ ;
+    public nuevoSistema (in cantCiudades: N, in traslados: seq<InfoTraslado>): BestEffort { //O(|cantCiudades| + |traslados|)
+        res := new BestEffort;
+        res.ciudades = newArray<Ciudad>[cantCiudades];
+        i := 0;
+        while (i < cantCiudades ) { //O(|cantCiudades|)
+            nuevaCiudad = new Ciudad;
+            nuevaCiudad.ganancia = 0;
+            nuevaCiudad.perdida = 0;
+            res.ciudades[i] = nuevaCiudad;
+            i ++ ;
+        }
+
+        res.mayorGanancia = new ArrayList[cantCiudades]; // nuevo arr tamaño 1
+        res.mayorGanancia = res.ciudades;
+        res.mayorPerdida = new ArrayList[cantCiudades];
+        res.mayorPerdida = res.ciudades;
+        res.gananciaTotal = (0,0);
+
+        j := 0;
+        while (j < traslados.length()) { //O(|traslados|)
+            res.gananciaTotal[0] = res.gananciaTotal[0] + traslados[j].ganancia;
+            res.gananciaTotal[1] += 1;
+            
+            res.ciudades[traslados[j].origen].ganancia += traslados[j].gananciaNeta ;
+            res.ciudades[traslados[j].destino].perdida += traslados[j].gananciaNeta ;
+            
+            res.ciudades[traslados[j].origen].balance += traslados[j].gananciaNeta;
+            res.ciudades[traslados[j].destino].balance -= traslados[j].gananciaNeta ;
+        
+            if (res.mayorGanancia[0] < res.ciudades[traslados[j].origen].ganancia) {
+                res.mayorGanancia = [res.ciudades[traslados[j].origen].ganancia] 
+            }
+            else if (res.mayorGanancia[0] == res.ciudades[traslados[j].origen].ganancia) {
+                res.mayorGanancia ++ [res.ciudades[traslados[j].origen].ganancia]
+            }
+
+            if (res.mayorPerdida[0] < res.ciudades[traslados[j].origen].perdida) {//devuelve la parte entera de la ganancia promedio por t
+                res.mayorPerdida = [res.ciudades[traslados[j].origen].perdida] 
+            }
+            else if (res.mayorPerdida[0] == res.ciudades[traslados[j].origen].perdida) {
+                res.mayorPerdida ++ [res.ciudades[traslados[j].origen].perdida]
+            }
+
+            j++;
+        }
+        
+        // creo heaps. primer param el arreglo que recibe y el segundo el comparable
+        res.mayorSuperavit = new Heap(res.ciudades, balance); //O(|ciudades|)
+
+
+        //preguntar si creamos una clase maxHeap y otra minHeap o si Heap recibe un parametro
+
+        res.trasladosMasAntiguos = new Heap(arrTraslados, timestamp, min); //O(|traslados|)
+        res.trasladosMasRedituables = new Heap(arrTraslados, ganancia, max); //O(|traslados|)
     }
 
-    res.mayorGanancia = new ArrayList[cantCiudades]; // nuevo arr tamaño 1
-    res.mayorGanancia = res.ciudades;
-    res.mayorPerdida = new ArrayList[cantCiudades];
-    res.mayorPerdida = res.ciudades;
-    res.gananciaTotal = (0,0);
-
-    j := 0;
-    while (j < traslados.length()) { //O(|traslados|)
-        res.gananciaTotal[0] = res.gananciaTotal[0] + traslados[j].ganancia;
-        res.gananciaTotal[1] += 1;
+    private void registrarTraslados(Arr(Traslado) traslados){
         
-        res.ciudades[traslados[j].origen].ganancia += traslados[j].gananciaNeta ;
-        res.ciudades[traslados[j].destino].perdida += traslados[j].gananciaNeta ;
-        
-        res.ciudades[traslados[j].origen].balance += traslados[j].gananciaNeta;
-        res.ciudades[traslados[j].destino].balance -= traslados[j].gananciaNeta ;
-    
-        if (res.mayorGanancia[0] < res.ciudades[traslados[j].origen].ganancia) {
-            res.mayorGanancia = [res.ciudades[traslados[j].origen].ganancia] 
-        }
-        else if (res.mayorGanancia[0] == res.ciudades[traslados[j].origen].ganancia) {
-            res.mayorGanancia ++ [res.ciudades[traslados[j].origen].ganancia]
-        }
-
-        if (res.mayorPerdida[0] < res.ciudades[traslados[j].origen].perdida) {//devuelve la parte entera de la ganancia promedio por t
-            res.mayorPerdida = [res.ciudades[traslados[j].origen].perdida] 
-        }
-        else if (res.mayorPerdida[0] == res.ciudades[traslados[j].origen].perdida) {
-            res.mayorPerdida ++ [res.ciudades[traslados[j].origen].perdida]
-        }
-
-        j++;
     }
-    
-    // creo heaps. primer param el arreglo que recibe y el segundo el comparable
-    res.mayorSuperavit = new Heap(res.ciudades, balance); //O(|ciudades|)
 
+    private Arr(int) despacharMasRedituables(int n){
+        i=0
+        res = []
+        if n > trasladosMasRedituables.length{
+            while i < trasladosMasRedituables.length
+                res ++ trasladosMasRedituables[0]
+                this.trasladosMasRedituables.eliminar();
+                i ++
+        
+        }else{
+            while i < N
+            res ++ trasladosMasRedituables[0]
+            this.trasladosMasRedituables.eliminar();
+            i ++
+        }
+        this.trasladosMasAntiguos.eliminarConIds(res);                
+        return res;
+    }
 
-    //preguntar si creamos una clase maxHeap y otra minHeap o si Heap recibe un parametro
+    private Arr(int) despacharMasAntiguos(int n){
 
-    res.trasladosMasAntiguos = new Heap(arrTraslados, timestamp, min); //O(|traslados|)
-    res.trasladosMasRedituables = new Heap(arrTraslados, ganancia, max); //O(|traslados|)
+    }
+    //etc
 
     end
     //creo que no usaremos Comparable, porque siempre tratamos con int (?)
-    class Heap<T extends Comparable<T>> {
-        private ArrayList<T> maxHeap;
-        //clave:id, valor:  
-        private dict<Integer, Integer> positionMap;
+class Heap<T extends Comparable<T>> {
+    private ArrayList<T> maxHeap;
+    //clave:id, valor:  
+    private dict<Integer, Integer> positionMap;
+    private Comparable valorAComparar;
 
-        public Heap(ArrayList arr, Comparable comparable){
-            this.maxHeap = floydInsert(arr, comparable);
+    public Heap(ArrayList arr, Comparable comparable){
+        this.valorAComparar = comparable;
+        this.maxHeap = floydInsert(arr);
+    }
+
+    private void floydInsert(ArrayList arr){
+        for(int i = arr.length/2 -1; i >= 0; i--){
+            heapify(i, arr);
         }
+        this.maxHeap = arr;
+    }
 
-        private void floydInsert(ArrayList arr, Comparable comparable){
-            for(int i = arr.length/2 -1; i >= 0; i--){
-                heapify(i, arr, comparable);
-            }
-            this.maxHeap = arr;
+    private void heapify(int i, ArrayList arr){
+        int largest = i;
+        int left = 2i + 1;
+        int right = 2i + 2;
+
+        if (left < arr.length && arr[left].valorAComparar > arr[largest].valorAComparar){
+            largest = left
         }
-
-        private void heapify(int i, ArrayList arr, Comparable comparable){
-            int largest = i;
-            int left = 2i + 1;
-            int right = 2i + 2;
-
-            if (left < arr.length && arr[left].comparable > arr[largest].comparable){
-                largest = left
-            }
-            if (right < arr.length && arr[right].comparable > arr[largest].comparable){
-                largest = right
-            }
-            if (largest != i){
-                swap(i, largest)
-                heapify(largest)
-            }
+        if (right < arr.length && arr[right].valorAComparar > arr[largest].valorAComparar){
+            largest = right
         }
-        private void swap(int i, int j, arr) {
-            //revisar para no hacer aliasing
-            int temp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = temp;
-            positionMap.add(arr[i].id, arr[i]);
-            positionMap.add(arr[j].id, arr[j]);
+        //if (right < arr.length && arr[right].valorAComparar == arr[largest].valorAComparar){
+        //    if(arr[rigth].id < arr[largest].id){
+        //        largest = right
+        //   }
+        //}
+        if (largest != i){
+            swap(i, largest)
+            heapify(largest, arr);
         }
     }
+
+    private void eliminar(){
+        swap(0, this.maxHeap.size()-1, this.maxHeap);
+        this.maxHeap.remove(this.maxHeap.size()-1);
+        heapify(0, this.maxHeap);
+    }
+
+    //eliminarConIds(this.trasladosMasAntiguos, res)
+
+    private void eliminarConIds(Arr<Int> arrIds){
+        int i = 0;
+        while i < arrIds {
+            this.maxHeap.swap(this.maxHeap.size()-1, this.maxHeap.positionMap.get(arrIds[i]));
+            this.maxHeap.remove(this.maxHeap.size()- 1);
+            heapify(this.maxHeap.positionMap.get(arrIds[i]), this.maxHeap);
+        }
+    }
+
+    private void swap(int i, int j, arr) {
+        //revisar para no hacer aliasing
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+        positionMap.add(arr[i].id, arr[i]);
+        positionMap.add(arr[j].id, arr[j]);
+    }
+}
