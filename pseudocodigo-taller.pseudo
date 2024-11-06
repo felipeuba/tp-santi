@@ -175,3 +175,6 @@ class Heap<T extends Comparable<T>> {
         positionMap.add(arr[j].id, arr[j]);
     }
 }
+
+
+crear clases de Ciudad, Traslado, Comparable (?)
