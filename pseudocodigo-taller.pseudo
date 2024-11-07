@@ -157,10 +157,20 @@ class Heap<T extends Comparable<T>> {
         }
     }
 
+    private void heapifyUp(int i){
+        int padre = (i - 1) / 2;
+
+        while(i > 0 && this.maxHeap[i] > padre){
+            swap(i, padre, this.maxHeap);
+            i = padre;
+            padre = (i - 1) / 2;
+        }
+    }
+
     private void agregar(traslados Arr<Traslados>){
         for (i = 0; i < traslados.size(), i++){
             this.maxHeap.add(traslados[i]);
-            heapify(this.maxHeap.length/2 - 1, this.maxHeap);
+            heapifyUp(this.maxHeap.size()-1);
         }
     }
 
