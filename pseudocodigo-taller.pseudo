@@ -1,8 +1,16 @@
-Ciudad struct < 
-ganancia : N,
-pérdida : N,
-balance: Z //puede tener deficit
->
+Public class Ciudad{
+
+    int ganancia;
+    int perdida;
+    int balance;
+
+    public Ciudad(){
+        this.ganancia = 0;
+        this.perdida = 0;
+        this.balance = 0;
+
+    }
+}
 
 InfoTraslado struct <
 id: N, 
@@ -29,8 +37,6 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
         i := 0;
         while (i < cantCiudades ) { //O(|cantCiudades|)
             nuevaCiudad = new Ciudad();
-            nuevaCiudad.ganancia = 0;
-            nuevaCiudad.perdida = 0;
             res.ciudades[i] = nuevaCiudad;
             i ++ ;
         }
@@ -41,6 +47,16 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
         res.gananciaTotal = (0,0);
 
         //preguntar si de esta forma se actualizan bien las ciudades
+        //IMPORTANTEEEEEE
+        //
+        //IMPORTANTEEEEEE
+        //Las estad´ısticas aplican sobre los traslados despachados. Es decir, un traslado empieza a aportar informaci´on estad´ıstica
+        //a partir del momento en el que es seleccionado por el sistema para ser despachado.
+        //
+        //IMPORTANTEEEEEE
+        //
+        //IMPORTANTEEEEEE
+
         actualizarCiudades(res.ciudades, traslados)
 
                 
@@ -111,7 +127,22 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
     }
 
     private Arr(int) despacharMasAntiguos(int n){
-
+        i=0
+        res = []
+        if n > trasladosMasAntiguos.length{
+            while i < trasladosMasAntiguos.length
+                res ++ trasladosMasAntiguos[0]
+                this.trasladosMasAntiguos.eliminar();
+                i ++
+        
+        }else{
+            while i < N
+            res ++ trasladosMasAntiguos[0]
+            this.trasladosMasAntiguos.eliminar();
+            i ++
+        }
+        this.trasladosMasRedituables.eliminarConIds(res);                
+        return res;
     }
     //etc
 
@@ -119,15 +150,13 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
     //creo que no usaremos Comparable, porque siempre tratamos con int (?)
 class Heap<T extends Comparable<T>> {
     private ArrayList<T> maxHeap;
-    //clave:id, valor:
-    //podemos usar hashmap?
+    //clave:id, valor:  
     private dict<Integer, Integer> positionMap;
     private Comparable valorAComparar;
 
     public Heap(ArrayList arr, Comparable comparable){
         this.valorAComparar = comparable;
         this.maxHeap = floydInsert(arr);
-        this.positionMap = new dict()
     }
 
     private void floydInsert(ArrayList arr){
@@ -205,3 +234,16 @@ class Heap<T extends Comparable<T>> {
 end
 
 crear clases de Ciudad, Traslado, Comparable (?)
+
+public List<Integer> ciudadesConMayorGanancia() {
+    return new ArrayList<>(this.mayorGanancia);
+
+}
+public List<Integer> ciudadesConMayorPerdida() { 
+    return new ArrayList<>(this.mayorPerdida);
+}
+
+    public int ciudadConMayorSuperavit() {
+        return this.mayorSuperavit.maxHeap.get(0).id;
+    }
+    
