@@ -46,20 +46,6 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
         res.mayorPerdida = res.ciudades;
         res.gananciaTotal = (0,0);
 
-        //preguntar si de esta forma se actualizan bien las ciudades
-        //IMPORTANTEEEEEE
-        //
-        //IMPORTANTEEEEEE
-        //Las estad´ısticas aplican sobre los traslados despachados. Es decir, un traslado empieza a aportar informaci´on estad´ıstica
-        //a partir del momento en el que es seleccionado por el sistema para ser despachado.
-        //
-        //IMPORTANTEEEEEE
-        //
-        //IMPORTANTEEEEEE
-
-        actualizarCiudades(res.ciudades, traslados)
-
-                
         // creo heaps. primer param el arreglo que recibe y el segundo el comparable
         res.mayorSuperavit = new Heap(res.ciudades, balance); //O(|ciudades|)
 
@@ -122,6 +108,8 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
             this.trasladosMasRedituables.eliminar();
             i ++
         }
+        
+        actualizarCiudades(this.ciudades, res)
         this.trasladosMasAntiguos.eliminarConIds(res);                
         return res;
     }
@@ -141,6 +129,7 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
             this.trasladosMasAntiguos.eliminar();
             i ++
         }
+        actualizarCiudades(this.ciudades, res)
         this.trasladosMasRedituables.eliminarConIds(res);                
         return res;
     }
