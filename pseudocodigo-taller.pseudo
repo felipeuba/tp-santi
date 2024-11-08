@@ -119,13 +119,15 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
     //creo que no usaremos Comparable, porque siempre tratamos con int (?)
 class Heap<T extends Comparable<T>> {
     private ArrayList<T> maxHeap;
-    //clave:id, valor:  
+    //clave:id, valor:
+    //podemos usar hashmap?
     private dict<Integer, Integer> positionMap;
     private Comparable valorAComparar;
 
     public Heap(ArrayList arr, Comparable comparable){
         this.valorAComparar = comparable;
         this.maxHeap = floydInsert(arr);
+        this.positionMap = new dict()
     }
 
     private void floydInsert(ArrayList arr){
