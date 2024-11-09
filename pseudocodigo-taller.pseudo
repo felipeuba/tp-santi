@@ -9,7 +9,9 @@ Public class Ciudad{
         this.ganancia = 0;
         this.perdida = 0;
         this.balance = 0;
-
+        getBalance(){
+            return this.balance
+        }
     }
 }
 
@@ -18,8 +20,27 @@ id: N,
 origen: N, 
 destino: N, 
 gananciaNeta: N, 
-timestamp: N
+timestamp: N,
+getGanancia(){
+    return this.ganancia
+}
+getTimestamp(){
+    return this.timestamp
+}
 >
+
+import java.util.Comparator;
+
+public class Comparators {
+    public static final Comparator<Traslado> BY_GANANCIA = (p1, p2) -> 
+        p2.getGanancia().compareTo(p1.getGanancia());
+
+    public static final Comparator<Traslado> BY_TIMESTAMP = (p1, p2) -> 
+        p2.getTimestamp().compareTo(p1.getTimestamp());
+
+    public static final Comparator<Traslado> BY_BALANCE = (p1, p2) -> 
+        p2.getBalance().compareTo(p1.getBalance());
+}
 
 Módulo BestEffort 
 implementa … {
@@ -109,8 +130,8 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
     private Arr(int) despacharMasRedituables(int n){
         i=0
         res = []
-        if n > trasladosMasRedituables.length{
-            while i < trasladosMasRedituables.length
+        if n > trasladosMasRedituables.size{
+            while i < trasladosMasRedituables.size
                 res ++ trasladosMasRedituables[0]
                 this.trasladosMasRedituables.eliminar();
                 i ++
@@ -163,18 +184,16 @@ var gananciaTotal : (N,N) // (suma total, cantidad de traslados)
     end
     //creo que no usaremos Comparable, porque siempre tratamos con int (?)
 class Heap<T extends Comparable<T>> {
-    private ArrayList<T> maxHeap;
-    //clave:id, valor:  
-    private dict<Integer, Integer> positionMap;
-    private Comparable valorAComparar;
+    private ArrayList<T> HeapArr; 
+    private Comparator<T> comparator;
 
     public Heap(ArrayList arr, Comparable comparable){
-        this.valorAComparar = comparable;
-        this.maxHeap = floydInsert(arr);
+        this.valorAComparar = comparator;
+        this.HeapArr = floydInsert(arr);
     }
 
     private void floydInsert(ArrayList arr){
-        for(int i = arr.length/2 -1; i >= 0; i--){
+        for(int i = arr.size/2 -1; i >= 0; i--){
             heapify(i, arr);
         }
         this.maxHeap = arr;
@@ -184,14 +203,16 @@ class Heap<T extends Comparable<T>> {
         int largest = i;
         int left = 2i + 1;
         int right = 2i + 2;
+        //añadir chequeo de que left y right no esten fuera de indice
 
-        if (left < arr.length && arr[left].valorAComparar > arr[largest].valorAComparar){
+        //repetir esto con todos
+        if (left < arr.size && comparator.compare(arr[left], arr[largest] > 0)){
             largest = left
         }
-        if (right < arr.length && arr[right].valorAComparar > arr[largest].valorAComparar){
+        if (right < arr.size && arr[right].valorAComparar > arr[largest].valorAComparar){
             largest = right
         }
-        //if (right < arr.length && arr[right].valorAComparar == arr[largest].valorAComparar){
+        //if (right < arr.size && arr[right].valorAComparar == arr[largest].valorAComparar){
         //    if(arr[rigth].id < arr[largest].id){
         //        largest = right
         //   }
@@ -256,6 +277,11 @@ crear clases de Ciudad, Traslado, Comparable (?)
     public List<Integer> ciudadesConMayorPerdida() { 
         return new ArrayList<>(this.mayorPerdida);
     }
+
+        public int ciudadConMayorSuperavit() {
+            return this.mayorSuperavit.maxHeap.get(0).id;
+        }
+
 
         public int ciudadConMayorSuperavit() {
             return this.mayorSuperavit.maxHeap.get(0).id;
